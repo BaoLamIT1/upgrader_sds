@@ -8,7 +8,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:upgrader/upgrader.dart';
+import 'package:upgrader_sds/upgrader.dart';
 import 'package:version/version.dart';
 
 void main() {

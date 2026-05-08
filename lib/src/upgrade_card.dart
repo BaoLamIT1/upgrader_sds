@@ -30,6 +30,7 @@ class UpgradeCard extends StatefulWidget {
     this.showIgnore = true,
     this.showLater = true,
     this.showReleaseNotes = true,
+    this.releaseNotesWidget,
   }) : upgrader = upgrader ?? Upgrader.sharedInstance;
 
   /// The upgraders used to configure the upgrade dialog.
@@ -68,6 +69,9 @@ class UpgradeCard extends StatefulWidget {
 
   /// Hide or show release notes (default: true)
   final bool showReleaseNotes;
+
+  /// A custom widget to replace the default release notes list.
+  final Widget? releaseNotesWidget;
 
   @override
   UpgradeCardState createState() => UpgradeCardState();
@@ -129,22 +133,32 @@ class UpgradeCardState extends State<UpgradeCard> {
     }
 
     Widget? notes;
-    if (shouldDisplayReleaseNotes && releaseNotes != null) {
-      notes = Padding(
+    if (widget.showReleaseNotes) {
+      if (widget.releaseNotesWidget != null) {
+        notes = Padding(
           padding: const EdgeInsets.only(top: 15.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(appMessages.message(UpgraderMessage.releaseNotes) ?? '',
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text(
-                releaseNotes,
-                maxLines: widget.maxLines,
-                overflow: widget.overflow,
-              ),
-            ],
-          ));
+          child: widget.releaseNotesWidget,
+        );
+      } else if (releaseNotes != null) {
+        notes = Padding(
+            padding: const EdgeInsets.only(top: 15.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                    (appMessages.message(UpgraderMessage.releaseNotesHeader) ??
+                            'WHAT\'S NEW')
+                        .toUpperCase(),
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  releaseNotes,
+                  maxLines: widget.maxLines,
+                  overflow: widget.overflow,
+                ),
+              ],
+            ));
+      }
     }
 
     return Card(

@@ -18,7 +18,7 @@ dependencies:
   http: ^1.2.2
   path: ^1.9.0
 
-  upgrader:
+  upgrader_sds:
     path: ../
   version: ^3.0.2
 

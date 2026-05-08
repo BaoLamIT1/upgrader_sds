@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:upgrader/upgrader.dart';
+import 'package:upgrader_sds/upgrader.dart';
 
 final _filenames = {
   'com.kotoko.express': 'test_play_store_page1.txt',

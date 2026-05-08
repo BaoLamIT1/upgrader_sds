@@ -3,7 +3,7 @@
  */
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:upgrader/upgrader.dart';
+import 'package:upgrader_sds/upgrader.dart';
 
 void main() {
   group('testing UpgraderOS', () {

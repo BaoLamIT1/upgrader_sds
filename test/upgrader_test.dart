@@ -9,7 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http/src/client.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:upgrader/upgrader.dart';
+import 'package:upgrader_sds/upgrader.dart';
 import 'package:version/version.dart';
 
 import 'appcast_test.dart';

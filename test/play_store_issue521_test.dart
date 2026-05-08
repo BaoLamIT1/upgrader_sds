@@ -6,7 +6,7 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart';
-import 'package:upgrader/upgrader.dart';
+import 'package:upgrader_sds/upgrader.dart';
 
 void main() {
   test('testing Play Store version parsing issue #521', () async {

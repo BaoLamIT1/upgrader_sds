@@ -31,6 +31,9 @@ enum UpgraderMessage {
   /// Release Notes
   releaseNotes,
 
+  /// Release Notes Header
+  releaseNotesHeader,
+
   /// Title
   title,
 }
@@ -76,6 +79,8 @@ class UpgraderMessages {
         return prompt;
       case UpgraderMessage.releaseNotes:
         return releaseNotes;
+      case UpgraderMessage.releaseNotesHeader:
+        return releaseNotesHeader;
       case UpgraderMessage.title:
         return title;
     }
@@ -884,6 +889,23 @@ class UpgraderMessages {
       case 'en':
       default:
         message = 'Release Notes';
+        break;
+    }
+    return message;
+  }
+
+  /// The release notes header.
+  /// Override this getter to provide a custom value. Values provided in the
+  /// [message] function will be used over this value.
+  String get releaseNotesHeader {
+    String message;
+    switch (languageCode) {
+      case 'vi':
+        message = 'CÓ GÌ MỚI';
+        break;
+      case 'en':
+      default:
+        message = 'WHAT\'S NEW';
         break;
     }
     return message;

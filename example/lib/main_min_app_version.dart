@@ -3,7 +3,7 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:upgrader/upgrader.dart';
+import 'package:upgrader_sds/upgrader.dart';
 import 'package:version/version.dart';
 
 void main() async {

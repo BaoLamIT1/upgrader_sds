@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Larry Aasen. All rights reserved.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:upgrader/src/upgrader_version_info.dart';
+import 'package:upgrader_sds/src/upgrader_version_info.dart';
 import 'package:version/version.dart';
 
 void main() {

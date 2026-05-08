@@ -41,6 +41,7 @@ class UpgradeAlert extends StatefulWidget {
     this.buttonTextColor,
     this.child,
     this.isFullScreen,
+    this.releaseNotesWidget,
   }) : upgrader = upgrader ?? Upgrader.sharedInstance;
 
   /// The upgraders used to configure the upgrade dialog.
@@ -99,6 +100,9 @@ class UpgradeAlert extends StatefulWidget {
 
   /// The [child] contained by the widget.
   final Widget? child;
+
+  /// A custom widget to replace the default release notes list.
+  final Widget? releaseNotesWidget;
 
   @override
   UpgradeAlertState createState() => UpgradeAlertState();
@@ -176,6 +180,7 @@ class UpgradeAlertState extends State<UpgradeAlert> {
           buttonColor: widget.buttonColor,
           buttonTextColor: widget.buttonTextColor,
           isFullScreen: widget.isFullScreen,
+          releaseNotesWidget: widget.releaseNotesWidget,
         );
       });
     }
@@ -252,6 +257,7 @@ class UpgradeAlertState extends State<UpgradeAlert> {
     List<Color>? buttonColor,
     Color? buttonTextColor,
     bool? isFullScreen,
+    Widget? releaseNotesWidget,
   }) {
     if (widget.upgrader.state.debugLogging) {
       print('upgrader: showTheDialog title: $title');
@@ -294,6 +300,7 @@ class UpgradeAlertState extends State<UpgradeAlert> {
             buttonColor: buttonColor,
             buttonTextColor: buttonTextColor,
             isFullScreen: isFullScreen,
+            releaseNotesWidget: releaseNotesWidget,
           ),
         );
 
@@ -343,6 +350,7 @@ class UpgradeAlertState extends State<UpgradeAlert> {
     Color? textColor,
     List<Color>? buttonColor,
     Color? buttonTextColor,
+    Widget? releaseNotesWidget,
   }) {
     // Logic kiểm tra nút bấm (Giữ nguyên logic gốc)
     final isBlocked = widget.upgrader.blocked();
@@ -378,132 +386,95 @@ class UpgradeAlertState extends State<UpgradeAlert> {
 
     // Xử lý phần Release Notes (Matching new reference image)
     Widget? notes;
-    if (releaseNotes != null && widget.showReleaseNotes) {
-      final lines =
-          releaseNotes.split('\n').where((s) => s.trim().isNotEmpty).toList();
+    if (widget.showReleaseNotes) {
+      if (releaseNotesWidget != null) {
+        notes = Padding(
+          padding: const EdgeInsets.only(top: 24.0),
+          child: releaseNotesWidget,
+        );
+      } else if (releaseNotes != null) {
+        final lines =
+            releaseNotes.split('\n').where((s) => s.trim().isNotEmpty).toList();
 
-      notes = Padding(
-        padding: const EdgeInsets.only(top: 24.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFFE0E3E5).withOpacity(0.5),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+        notes = Padding(
+          padding: const EdgeInsets.only(top: 24.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: const Color(0xFFE0E3E5).withOpacity(0.5),
+                width: 1,
               ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Stack(
-              children: [
-                // Decorative Blurred Circle (Matching Figma)
-                Positioned(
-                  top: -30,
-                  right: -30,
-                  child: Container(
-                    width: 96,
-                    height: 96,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        colors: [
-                          const Color(0xFFFF6B35).withOpacity(0.15),
-                          const Color(0xFFFF6B35).withOpacity(0.0),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        (messages.message(UpgraderMessage.releaseNotes) ??
-                                'WHAT\'S NEW')
-                            .toUpperCase(),
-                        style: releaseNoteHeaderStyle.copyWith(
-                          fontSize: 12,
-                          letterSpacing: 1.0,
-                          color: const Color(0xFF594139),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      ...lines.map((line) {
-                        // Thử đoán icon dựa trên nội dung
-                        IconData iconData = Icons.auto_awesome;
-                        Color bgIconColor = const Color(0xFFF3F4F6);
-                        Color iconColor = const Color(0xFF594139);
-
-                        String lowerLine = line.toLowerCase();
-                        if (lowerLine.contains('fix') ||
-                            lowerLine.contains('sửa')) {
-                          iconData = Icons.bug_report;
-                          bgIconColor = const Color(0xFFF3F4F6);
-                          iconColor = const Color(0xFF594139);
-                        } else if (lowerLine.contains('tối ưu') ||
-                            lowerLine.contains('speed') ||
-                            lowerLine.contains('hiệu năng') ||
-                            lowerLine.contains('tăng tốc')) {
-                          iconData = Icons.flash_on;
-                          bgIconColor = const Color(0xFFE0E7FF);
-                          iconColor = const Color(0xFF6366F1);
-                        } else if (lowerLine.contains('lịch') ||
-                            lowerLine.contains('calendar') ||
-                            lowerLine.contains('giao diện')) {
-                          iconData = Icons.calendar_month;
-                          bgIconColor = const Color(0xFFE0F2FE);
-                          iconColor = const Color(0xFF0369A1);
-                        }
-
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 36,
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  color: bgIconColor,
-                                  shape: BoxShape.circle,
-                                ),
-                                child:
-                                    Icon(iconData, size: 18, color: iconColor),
-                              ),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Text(
-                                  line.replaceFirst(RegExp(r'^[-•*]\s*'), ''),
-                                  style: contentStyle.copyWith(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: textDark,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Stack(
+                children: [
+                  // Decorative Blurred Circle (Matching Figma)
+                  Positioned(
+                    top: -30,
+                    right: -30,
+                    child: Container(
+                      width: 96,
+                      height: 96,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            const Color(0xFFFF6B35).withOpacity(0.15),
+                            const Color(0xFFFF6B35).withOpacity(0.0),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          (messages.message(UpgraderMessage.releaseNotesHeader) ??
+                                  'WHAT\'S NEW')
+                              .toUpperCase(),
+                          style: releaseNoteHeaderStyle.copyWith(
+                            fontSize: 12,
+                            letterSpacing: 1.0,
+                            color: const Color(0xFF594139),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ...lines.map((line) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: Text(
+                              line.replaceFirst(RegExp(r'^[-•*]\s*'), ''),
+                              style: contentStyle.copyWith(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: textDark,
+                              ),
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      );
+        );
+      }
     }
 
     Widget child = Container(

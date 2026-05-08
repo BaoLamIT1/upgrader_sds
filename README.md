@@ -468,10 +468,10 @@ each of the messages. Finally, when calling UpgradeAlert (or UpgradeCard), add t
 of your extended class. Here is an example:
 
 ```dart
-class MySpanishMessages extends UpgraderMessages {
+class MyMessages extends UpgraderMessages {
   /// Override the message function to provide custom language localization.
   @override
-  String message(UpgraderMessage messageKey) {
+  String? message(UpgraderMessage messageKey) {
     if (languageCode == 'es') {
       switch (messageKey) {
         case UpgraderMessage.body:
@@ -486,8 +486,29 @@ class MySpanishMessages extends UpgraderMessages {
           return 'es Want to update?';
         case UpgraderMessage.releaseNotes:
           return 'es Release Notes';
+        case UpgraderMessage.releaseNotesHeader:
+          return 'es WHAT\'S NEW';
         case UpgraderMessage.title:
           return 'es Update App?';
+      }
+    } else if (languageCode == 'vi') {
+      switch (messageKey) {
+        case UpgraderMessage.body:
+          return 'Phiên bản mới của {{appName}} đã sẵn sàng! Phiên bản {{currentAppStoreVersion}} hiện đã có sẵn, bạn đang dùng {{currentInstalledVersion}}.';
+        case UpgraderMessage.buttonTitleIgnore:
+          return 'BỎ QUA';
+        case UpgraderMessage.buttonTitleLater:
+          return 'ĐỂ SAU';
+        case UpgraderMessage.buttonTitleUpdate:
+          return 'CẬP NHẬT';
+        case UpgraderMessage.prompt:
+          return 'Bạn có muốn cập nhật ứng dụng?';
+        case UpgraderMessage.releaseNotes:
+          return 'Thông tin bản cập nhật';
+        case UpgraderMessage.releaseNotesHeader:
+          return 'CÓ GÌ MỚI';
+        case UpgraderMessage.title:
+          return 'Cập nhật ứng dụng?';
       }
     }
     // Messages that are not provided above can still use the default values.
@@ -495,7 +516,7 @@ class MySpanishMessages extends UpgraderMessages {
   }
 }
 
-UpgradeAlert(upgrader: Upgrader(messages: MySpanishMessages()));
+UpgradeAlert(upgrader: Upgrader(messages: MyMessages()));
 ```
 
 You can even force the `upgrader` package to use a specific language, instead of the

@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Larry Aasen. All rights reserved.
 
 import 'package:flutter/cupertino.dart';
-import 'package:upgrader/upgrader.dart';
+import 'package:upgrader_sds/upgrader.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

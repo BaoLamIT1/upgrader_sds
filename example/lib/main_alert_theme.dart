@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Larry Aasen. All rights reserved.
 
 import 'package:flutter/material.dart';
-import 'package:upgrader/upgrader.dart';
+import 'package:upgrader_sds/upgrader.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,6 +54,7 @@ class MyUpgradeAlertState extends UpgradeAlertState {
     Color? textColor,
     List<Color>? buttonColor,
     Color? buttonTextColor,
+    Widget? releaseNotesWidget,
   }) {
     return Theme(
       data: ThemeData(

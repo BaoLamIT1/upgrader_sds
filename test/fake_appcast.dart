@@ -4,7 +4,7 @@
 import 'dart:io';
 
 import 'package:mockito/mockito.dart';
-import 'package:upgrader/src/appcast.dart';
+import 'package:upgrader_sds/src/appcast.dart';
 import 'package:version/version.dart';
 
 import 'appcast_test.dart';

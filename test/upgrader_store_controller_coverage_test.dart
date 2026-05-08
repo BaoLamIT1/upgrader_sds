@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Larry Aasen. All rights reserved.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:upgrader/upgrader.dart';
+import 'package:upgrader_sds/upgrader.dart';
 import 'package:version/version.dart';
 import 'package:http/testing.dart';
 import 'package:http/http.dart' as http;

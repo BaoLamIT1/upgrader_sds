@@ -12,7 +12,7 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart';
-import 'package:upgrader/upgrader.dart';
+import 'package:upgrader_sds/upgrader.dart';
 
 void main() {
   test('Egypt Play Store page version parsing should not extract "Shopping"',
