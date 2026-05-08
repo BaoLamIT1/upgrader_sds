@@ -885,6 +885,8 @@ class UpgraderMessages {
       case 'ta':
       case 'uk':
       case 'vi':
+        message = 'NỘI DUNG CẬP NHẬT';
+        break;
       case 'zh':
       case 'en':
       default:
@@ -901,7 +903,7 @@ class UpgraderMessages {
     String message;
     switch (languageCode) {
       case 'vi':
-        message = 'CÓ GÌ MỚI';
+        message = 'NỘI DUNG CẬP NHẬT';
         break;
       case 'en':
       default:
