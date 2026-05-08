@@ -346,39 +346,161 @@ class UpgradeAlertState extends State<UpgradeAlert> {
   }) {
     // Logic kiểm tra nút bấm (Giữ nguyên logic gốc)
     final isBlocked = widget.upgrader.blocked();
-    final showIgnore = isBlocked ? true : widget.showIgnore;
-    final showLater = isBlocked ? true : widget.showLater;
+    final showIgnore = isBlocked ? false : widget.showIgnore;
+    final showLater = isBlocked ? false : widget.showLater;
 
-    // Màu sắc chủ đạo (Lấy theo style Dark Mode của Ảnh 1)
-    Color dialogBackgroundColour = dialogBackgroundColor ?? Color(0xFF191D2D);
-    const Color primaryBlue = Color(0xFF2196F3);
-    const Color cyanBlue = Color(0xFF00E5FF);
+    // Design Tokens (Modern HR Style)
+    const Color primaryOrange = Color(0xFFFF6B35);
+    const Color headerLightOrange = Color(0xFFFFF4ED);
+    const Color textDark = Color(0xFF191C1E);
+    const Color textSecondary = Color(0xFF594139);
+    const Color bgWhite = Colors.white;
+
+    // Typography styles
     const TextStyle titleStyle = TextStyle(
-        fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white);
-    const TextStyle contentStyle =
-        TextStyle(fontSize: 14, color: Colors.white70);
+      fontSize: 22,
+      fontWeight: FontWeight.bold,
+      color: textDark,
+      fontFamily: 'Inter',
+    );
+    const TextStyle contentStyle = TextStyle(
+      fontSize: 14,
+      color: textDark,
+      fontFamily: 'Inter',
+      height: 1.5,
+    );
     const TextStyle releaseNoteHeaderStyle = TextStyle(
-        fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white);
+      fontSize: 15,
+      fontWeight: FontWeight.bold,
+      color: textDark,
+      fontFamily: 'Inter',
+    );
 
-    // Xử lý phần Release Notes
+    // Xử lý phần Release Notes (Matching new reference image)
     Widget? notes;
-    if (releaseNotes != null) {
+    if (releaseNotes != null && widget.showReleaseNotes) {
+      final lines = releaseNotes
+          .split('\n')
+          .where((s) => s.trim().isNotEmpty)
+          .toList();
+
       notes = Padding(
-        padding: const EdgeInsets.only(top: 15.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-                messages.message(UpgraderMessage.releaseNotes) ??
-                    'Release Notes',
-                style: releaseNoteHeaderStyle),
-            const SizedBox(height: 5),
-            Text(
-              releaseNotes,
-              style: contentStyle.copyWith(fontSize: 13),
+        padding: const EdgeInsets.only(top: 24.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: const Color(0xFFE0E3E5).withOpacity(0.5),
+              width: 1,
             ),
-          ],
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Stack(
+              children: [
+                // Decorative Blurred Circle (Matching Figma)
+                Positioned(
+                  top: -30,
+                  right: -30,
+                  child: Container(
+                    width: 96,
+                    height: 96,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          const Color(0xFFFF6B35).withOpacity(0.15),
+                          const Color(0xFFFF6B35).withOpacity(0.0),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        (messages.message(UpgraderMessage.releaseNotes) ?? 'WHAT\'S NEW')
+                            .toUpperCase(),
+                        style: releaseNoteHeaderStyle.copyWith(
+                          fontSize: 12,
+                          letterSpacing: 1.0,
+                          color: const Color(0xFF594139),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ...lines.map((line) {
+                        // Thử đoán icon dựa trên nội dung
+                        IconData iconData = Icons.auto_awesome;
+                        Color bgIconColor = const Color(0xFFF3F4F6);
+                        Color iconColor = const Color(0xFF594139);
+
+                        String lowerLine = line.toLowerCase();
+                        if (lowerLine.contains('fix') || lowerLine.contains('sửa')) {
+                          iconData = Icons.bug_report;
+                          bgIconColor = const Color(0xFFF3F4F6);
+                          iconColor = const Color(0xFF594139);
+                        } else if (lowerLine.contains('tối ưu') ||
+                            lowerLine.contains('speed') ||
+                            lowerLine.contains('hiệu năng') ||
+                            lowerLine.contains('tăng tốc')) {
+                          iconData = Icons.flash_on;
+                          bgIconColor = const Color(0xFFE0E7FF);
+                          iconColor = const Color(0xFF6366F1);
+                        } else if (lowerLine.contains('lịch') ||
+                            lowerLine.contains('calendar') ||
+                            lowerLine.contains('giao diện')) {
+                          iconData = Icons.calendar_month;
+                          bgIconColor = const Color(0xFFE0F2FE);
+                          iconColor = const Color(0xFF0369A1);
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: bgIconColor,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(iconData, size: 18, color: iconColor),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Text(
+                                  line.replaceFirst(RegExp(r'^[-•*]\s*'), ''),
+                                  style: contentStyle.copyWith(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: textDark,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       );
     }
@@ -386,180 +508,170 @@ class UpgradeAlertState extends State<UpgradeAlert> {
     Widget child = Container(
       constraints: const BoxConstraints(maxWidth: 400),
       decoration: BoxDecoration(
-        color: dialogBackgroundColour,
+        color: bgWhite,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 20,
             offset: const Offset(0, 10),
           )
         ],
       ),
-      child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
-            child: Column(
-              mainAxisSize:
-                  isFullScreen ?? false ? MainAxisSize.max : MainAxisSize.min,
-              children: [
-                // 1. Icon Header
-                if (icon != null) icon,
-                const SizedBox(height: 12),
-
-                // 2. Title
-                Text(
-                  title,
-                  style: titleStyle,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 12),
-
-                // 3. Scrollable Content (Message + Release Notes)
-                isFullScreen ?? false
-                    ? Expanded(
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                message,
-                                style: contentStyle,
-                                textAlign: TextAlign.center,
-                              ),
-                              if (widget.showPrompt) ...[
-                                const SizedBox(height: 10),
-                                Text(
-                                  messages.message(UpgraderMessage.prompt) ??
-                                      '',
-                                  style: contentStyle,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                              if (notes != null)
-                                Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: notes),
-                            ],
-                          ),
-                        ),
-                      )
-                    : Flexible(
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                message,
-                                style: contentStyle,
-                                textAlign: TextAlign.center,
-                              ),
-                              if (widget.showPrompt) ...[
-                                const SizedBox(height: 10),
-                                Text(
-                                  messages.message(UpgraderMessage.prompt) ??
-                                      '',
-                                  style: contentStyle,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                              if (notes != null)
-                                Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: notes),
-                            ],
-                          ),
-                        ),
-                      ),
-                const SizedBox(height: 12),
-                // 4. Main Update Button (Gradient Style)
-                InkWell(
-                  onTap: () =>
-                      onUserUpdated(context, !widget.upgrader.blocked()),
-                  borderRadius: BorderRadius.circular(30),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
+              child: Column(
+                mainAxisSize: isFullScreen ?? false ? MainAxisSize.max : MainAxisSize.min,
+                children: [
+                  // 1. Icon Header (Exact Figma layering)
+                  Container(
+                    width: 140,
+                    height: 140,
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [primaryBlue, cyanBlue],
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                      ),
-                      borderRadius: BorderRadius.circular(30),
+                      shape: BoxShape.circle,
+                      color: const Color(0xFFE0E3E5), // Base fill from Figma
                       boxShadow: [
                         BoxShadow(
-                          color: primaryBlue.withOpacity(0.4),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
                       ],
                     ),
-                    child: Text(
-                      messages.message(UpgraderMessage.buttonTitleUpdate) ??
-                          'Update Now',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFFFF6B35).withOpacity(0.2), // Stop 0%: 20% opacity
+                            const Color(0xFF04A3E7).withOpacity(0.1), // Stop 100%: 10% opacity
+                          ],
+                          begin: Alignment.bottomLeft,
+                          end: Alignment.topRight,
+                        ),
+                      ),
+                      child: Center(
+                        child: icon ??
+                            const Icon(
+                              Icons.rocket_launch,
+                              size: 60,
+                              color: primaryOrange,
+                            ),
                       ),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 24),
 
-                // 5. Secondary Buttons (Later & Ignore) - Xếp gọn bên dưới
-                if (showLater || showIgnore)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (showLater)
-                          TextButton(
-                            onPressed: () => onUserLater(context, true),
-                            child: Text(
-                              messages.message(
-                                      UpgraderMessage.buttonTitleLater) ??
-                                  'Later',
-                              style: const TextStyle(color: Colors.white54),
-                            ),
+                  // 2. Title
+                  Text(
+                    title,
+                    style: titleStyle,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+
+                  // 3. Scrollable Content
+                  Flexible(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            message,
+                            style: contentStyle,
+                            textAlign: TextAlign.center,
                           ),
-                        if (showLater && showIgnore)
-                          const Text(" | ",
-                              style: TextStyle(color: Colors.white24)),
-                        if (showIgnore)
-                          TextButton(
-                            onPressed: () => onUserIgnored(context, true),
-                            child: Text(
-                              messages.message(
-                                      UpgraderMessage.buttonTitleIgnore) ??
-                                  'Ignore',
-                              style: const TextStyle(color: Colors.white54),
+                          if (widget.showPrompt) ...[
+                            const SizedBox(height: 10),
+                            Text(
+                              messages.message(UpgraderMessage.prompt) ?? '',
+                              style: contentStyle.copyWith(fontWeight: FontWeight.w500),
+                              textAlign: TextAlign.center,
                             ),
-                          ),
-                      ],
+                          ],
+                          if (notes != null) notes,
+                        ],
+                      ),
                     ),
                   ),
-              ],
-            ),
-          ),
+                  const SizedBox(height: 24),
 
-          // Nút đóng nhanh (X) ở góc phải trên
-          if ((showLater || showIgnore))
-            Positioned(
-              right: 8,
-              top: 8,
-              child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white38),
-                onPressed: () =>
-                    onUserLater(context, true), // Hành vi đóng = Later
+                  // 4. Update Button
+                  InkWell(
+                    onTap: () => onUserUpdated(context, !widget.upgrader.blocked()),
+                    borderRadius: BorderRadius.circular(30),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: primaryOrange,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: primaryOrange.withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        messages.message(UpgraderMessage.buttonTitleUpdate) ?? 'Cập nhật ngay',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // 5. Secondary Button (Later)
+                  if (showLater)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: TextButton(
+                        onPressed: () => onUserLater(context, true),
+                        child: Text(
+                          messages.message(UpgraderMessage.buttonTitleLater) ?? 'Để sau',
+                          style: const TextStyle(color: textSecondary, fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ),
+                  
+                  // Ignore button
+                  if (showIgnore && !showLater)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: TextButton(
+                        onPressed: () => onUserIgnored(context, true),
+                        child: Text(
+                          messages.message(UpgraderMessage.buttonTitleIgnore) ?? 'Bỏ qua',
+                          style: const TextStyle(color: Colors.black38, fontSize: 12),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
-        ],
+
+            // Close Button (X)
+            if (showLater || showIgnore)
+              Positioned(
+                right: 8,
+                top: 8,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: textSecondary, size: 18),
+                  onPressed: () => onUserLater(context, true),
+                ),
+              ),
+          ],
+        ),
       ),
     );
 
@@ -567,115 +679,17 @@ class UpgradeAlertState extends State<UpgradeAlert> {
         ? Dialog.fullscreen(
             key: key,
             backgroundColor: Colors.transparent,
-            //   insetPadding: EdgeInsets.zero,
-            child: child)
+            child: child,
+          )
         : Dialog(
             key: key,
             backgroundColor: Colors.transparent,
+            insetPadding: const EdgeInsets.symmetric(horizontal: 32),
             child: child,
           );
   }
 
-  // Widget alertDialog(
-  //     Key? key,
-  //     String title,
-  //     String message,
-  //     String? releaseNotes,
-  //     BuildContext context,
-  //     bool cupertino,
-  //     UpgraderMessages messages) {
-  //   // If installed version is below minimum app version, or is a critical update,
-  //   // disable ignore and later buttons.
-  //   final isBlocked = widget.upgrader.blocked();
-  //   final showIgnore = isBlocked ? false : widget.showIgnore;
-  //   final showLater = isBlocked ? false : widget.showLater;
-  //
-  //   Widget? notes;
-  //   if (releaseNotes != null) {
-  //     notes = Padding(
-  //         padding: const EdgeInsets.only(top: 15.0),
-  //         child: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           crossAxisAlignment: cupertino
-  //               ? CrossAxisAlignment.center
-  //               : CrossAxisAlignment.start,
-  //           children: <Widget>[
-  //             Text(messages.message(UpgraderMessage.releaseNotes) ?? '',
-  //                 style: const TextStyle(fontWeight: FontWeight.bold)),
-  //             Text(releaseNotes),
-  //           ],
-  //         ));
-  //   }
-  //   final textTitle = Text(title, key: const Key('upgrader.dialog.title'));
-  //   final content = Container(
-  //       constraints: const BoxConstraints(maxHeight: 400),
-  //       child: SingleChildScrollView(
-  //           child: Column(
-  //         crossAxisAlignment:
-  //             cupertino ? CrossAxisAlignment.center : CrossAxisAlignment.start,
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: <Widget>[
-  //           Text(message),
-  //           if (widget.showPrompt)
-  //             Padding(
-  //               padding: const EdgeInsets.only(top: 15.0),
-  //               child: Text(messages.message(UpgraderMessage.prompt) ?? ''),
-  //             ),
-  //           if (notes != null) notes,
-  //         ],
-  //       )));
-  //   final actions = <Widget>[
-  //     if (showIgnore)
-  //       button(
-  //         cupertino: cupertino,
-  //         text: messages.message(UpgraderMessage.buttonTitleIgnore),
-  //         context: context,
-  //         onPressed: () => onUserIgnored(context, true),
-  //         isDefaultAction: false,
-  //       ),
-  //     if (showLater)
-  //       button(
-  //         cupertino: cupertino,
-  //         text: messages.message(UpgraderMessage.buttonTitleLater),
-  //         context: context,
-  //         onPressed: () => onUserLater(context, true),
-  //         isDefaultAction: false,
-  //       ),
-  //     button(
-  //       cupertino: cupertino,
-  //       text: messages.message(UpgraderMessage.buttonTitleUpdate),
-  //       context: context,
-  //       onPressed: () => onUserUpdated(context, !widget.upgrader.blocked()),
-  //       isDefaultAction: true,
-  //     ),
-  //   ];
-  //
-  //   return cupertino
-  //       ? CupertinoAlertDialog(
-  //           key: key, title: textTitle, content: content, actions: actions)
-  //       : Stack(
-  //           alignment: Alignment.center,
-  //           children: [
-  //             AlertDialog(
-  //                 key: key,
-  //                 title: textTitle,
-  //                 content: content,
-  //                 actions: actions),
-  //             Positioned(
-  //                 top: 250,
-  //                 child: CircleAvatar(
-  //                   backgroundColor: Colors.white,
-  //                   radius: 40,
-  //                   child: Center(
-  //                       child: Icon(
-  //                     Icons.update,
-  //                     size: 60,
-  //                     color: Colors.blue,
-  //                   )),
-  //                 )),
-  //           ],
-  //         );
-  // }
+
 
   Widget button({
     required bool cupertino,

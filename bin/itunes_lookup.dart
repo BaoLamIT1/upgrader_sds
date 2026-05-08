@@ -47,11 +47,6 @@ void main(List<String> arguments) async {
     );
   }
 
-  if (results == null) {
-    print('itunes_lookup there are no results');
-    return;
-  }
-
   final bundleId = iTunes.bundleId(results);
   final description = iTunes.description(results);
   final minAppVersion = iTunes.minAppVersion(results);
