@@ -351,7 +351,7 @@ class UpgradeAlertState extends State<UpgradeAlert> {
 
     // Design Tokens (Modern HR Style)
     const Color primaryOrange = Color(0xFFFF6B35);
-    const Color headerLightOrange = Color(0xFFFFF4ED);
+    // const Color headerLightOrange = Color(0xFFFFF4ED);
     const Color textDark = Color(0xFF191C1E);
     const Color textSecondary = Color(0xFF594139);
     const Color bgWhite = Colors.white;
@@ -379,10 +379,8 @@ class UpgradeAlertState extends State<UpgradeAlert> {
     // Xử lý phần Release Notes (Matching new reference image)
     Widget? notes;
     if (releaseNotes != null && widget.showReleaseNotes) {
-      final lines = releaseNotes
-          .split('\n')
-          .where((s) => s.trim().isNotEmpty)
-          .toList();
+      final lines =
+          releaseNotes.split('\n').where((s) => s.trim().isNotEmpty).toList();
 
       notes = Padding(
         padding: const EdgeInsets.only(top: 24.0),
@@ -431,7 +429,8 @@ class UpgradeAlertState extends State<UpgradeAlert> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        (messages.message(UpgraderMessage.releaseNotes) ?? 'WHAT\'S NEW')
+                        (messages.message(UpgraderMessage.releaseNotes) ??
+                                'WHAT\'S NEW')
                             .toUpperCase(),
                         style: releaseNoteHeaderStyle.copyWith(
                           fontSize: 12,
@@ -447,7 +446,8 @@ class UpgradeAlertState extends State<UpgradeAlert> {
                         Color iconColor = const Color(0xFF594139);
 
                         String lowerLine = line.toLowerCase();
-                        if (lowerLine.contains('fix') || lowerLine.contains('sửa')) {
+                        if (lowerLine.contains('fix') ||
+                            lowerLine.contains('sửa')) {
                           iconData = Icons.bug_report;
                           bgIconColor = const Color(0xFFF3F4F6);
                           iconColor = const Color(0xFF594139);
@@ -478,7 +478,8 @@ class UpgradeAlertState extends State<UpgradeAlert> {
                                   color: bgIconColor,
                                   shape: BoxShape.circle,
                                 ),
-                                child: Icon(iconData, size: 18, color: iconColor),
+                                child:
+                                    Icon(iconData, size: 18, color: iconColor),
                               ),
                               const SizedBox(width: 14),
                               Expanded(
@@ -525,12 +526,13 @@ class UpgradeAlertState extends State<UpgradeAlert> {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
               child: Column(
-                mainAxisSize: isFullScreen ?? false ? MainAxisSize.max : MainAxisSize.min,
+                mainAxisSize:
+                    isFullScreen ?? false ? MainAxisSize.max : MainAxisSize.min,
                 children: [
                   // 1. Icon Header (Exact Figma layering)
                   Container(
-                    width: 140,
-                    height: 140,
+                    width: 100,
+                    height: 100,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: const Color(0xFFE0E3E5), // Base fill from Figma
@@ -547,8 +549,10 @@ class UpgradeAlertState extends State<UpgradeAlert> {
                         shape: BoxShape.circle,
                         gradient: LinearGradient(
                           colors: [
-                            const Color(0xFFFF6B35).withOpacity(0.2), // Stop 0%: 20% opacity
-                            const Color(0xFF04A3E7).withOpacity(0.1), // Stop 100%: 10% opacity
+                            const Color(0xFFFF6B35)
+                                .withOpacity(0.2), // Stop 0%: 20% opacity
+                            const Color(0xFF04A3E7)
+                                .withOpacity(0.1), // Stop 100%: 10% opacity
                           ],
                           begin: Alignment.bottomLeft,
                           end: Alignment.topRight,
@@ -558,7 +562,7 @@ class UpgradeAlertState extends State<UpgradeAlert> {
                         child: icon ??
                             const Icon(
                               Icons.rocket_launch,
-                              size: 60,
+                              size: 40,
                               color: primaryOrange,
                             ),
                       ),
@@ -590,7 +594,8 @@ class UpgradeAlertState extends State<UpgradeAlert> {
                             const SizedBox(height: 10),
                             Text(
                               messages.message(UpgraderMessage.prompt) ?? '',
-                              style: contentStyle.copyWith(fontWeight: FontWeight.w500),
+                              style: contentStyle.copyWith(
+                                  fontWeight: FontWeight.w500),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -603,7 +608,8 @@ class UpgradeAlertState extends State<UpgradeAlert> {
 
                   // 4. Update Button
                   InkWell(
-                    onTap: () => onUserUpdated(context, !widget.upgrader.blocked()),
+                    onTap: () =>
+                        onUserUpdated(context, !widget.upgrader.blocked()),
                     borderRadius: BorderRadius.circular(30),
                     child: Container(
                       width: double.infinity,
@@ -620,7 +626,8 @@ class UpgradeAlertState extends State<UpgradeAlert> {
                         ],
                       ),
                       child: Text(
-                        messages.message(UpgraderMessage.buttonTitleUpdate) ?? 'Cập nhật ngay',
+                        messages.message(UpgraderMessage.buttonTitleUpdate) ??
+                            'Cập nhật ngay',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: Colors.white,
@@ -638,12 +645,15 @@ class UpgradeAlertState extends State<UpgradeAlert> {
                       child: TextButton(
                         onPressed: () => onUserLater(context, true),
                         child: Text(
-                          messages.message(UpgraderMessage.buttonTitleLater) ?? 'Để sau',
-                          style: const TextStyle(color: textSecondary, fontWeight: FontWeight.w500),
+                          messages.message(UpgraderMessage.buttonTitleLater) ??
+                              'Để sau',
+                          style: const TextStyle(
+                              color: textSecondary,
+                              fontWeight: FontWeight.w500),
                         ),
                       ),
                     ),
-                  
+
                   // Ignore button
                   if (showIgnore && !showLater)
                     Padding(
@@ -651,8 +661,10 @@ class UpgradeAlertState extends State<UpgradeAlert> {
                       child: TextButton(
                         onPressed: () => onUserIgnored(context, true),
                         child: Text(
-                          messages.message(UpgraderMessage.buttonTitleIgnore) ?? 'Bỏ qua',
-                          style: const TextStyle(color: Colors.black38, fontSize: 12),
+                          messages.message(UpgraderMessage.buttonTitleIgnore) ??
+                              'Bỏ qua',
+                          style: const TextStyle(
+                              color: Colors.black38, fontSize: 12),
                         ),
                       ),
                     ),
@@ -688,8 +700,6 @@ class UpgradeAlertState extends State<UpgradeAlert> {
             child: child,
           );
   }
-
-
 
   Widget button({
     required bool cupertino,
