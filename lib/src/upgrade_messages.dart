@@ -36,6 +36,12 @@ enum UpgraderMessage {
 
   /// Title
   title,
+
+  /// Tags for release notes
+  tagNew,
+  tagOptimize,
+  tagFix,
+  tagSecurity,
 }
 
 /// The default localized messages used for display in upgrader. Extend this
@@ -83,6 +89,14 @@ class UpgraderMessages {
         return releaseNotesHeader;
       case UpgraderMessage.title:
         return title;
+      case UpgraderMessage.tagNew:
+        return tagNew;
+      case UpgraderMessage.tagOptimize:
+        return tagOptimize;
+      case UpgraderMessage.tagFix:
+        return tagFix;
+      case UpgraderMessage.tagSecurity:
+        return tagSecurity;
     }
   }
 
@@ -1042,5 +1056,49 @@ class UpgraderMessages {
         break;
     }
     return message;
+  }
+
+  /// The tag for new features.
+  String get tagNew {
+    switch (languageCode) {
+      case 'vi':
+        return 'Mới';
+      case 'en':
+      default:
+        return 'New';
+    }
+  }
+
+  /// The tag for optimizations.
+  String get tagOptimize {
+    switch (languageCode) {
+      case 'vi':
+        return 'Tối ưu';
+      case 'en':
+      default:
+        return 'Optimize';
+    }
+  }
+
+  /// The tag for bug fixes.
+  String get tagFix {
+    switch (languageCode) {
+      case 'vi':
+        return 'Sửa lỗi';
+      case 'en':
+      default:
+        return 'Fix';
+    }
+  }
+
+  /// The tag for security updates.
+  String get tagSecurity {
+    switch (languageCode) {
+      case 'vi':
+        return 'Bảo mật';
+      case 'en':
+      default:
+        return 'Security';
+    }
   }
 }

@@ -216,6 +216,21 @@ class MyUpgraderMessages extends UpgraderMessages {
           return 'es Release Notes';
         case UpgraderMessage.title:
           return 'es Update App?';
+        case UpgraderMessage.releaseNotesHeader:
+          // TODO: Handle this case.
+          break;
+        case UpgraderMessage.tagNew:
+          // TODO: Handle this case.
+          break;
+        case UpgraderMessage.tagOptimize:
+          // TODO: Handle this case.
+          break;
+        case UpgraderMessage.tagFix:
+          // TODO: Handle this case.
+          break;
+        case UpgraderMessage.tagSecurity:
+          // TODO: Handle this case.
+          break;
       }
     }
     // Messages that are not provided above can still use the default values.

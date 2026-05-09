@@ -393,12 +393,12 @@ class UpgradeAlertState extends State<UpgradeAlert> {
           child: releaseNotesWidget,
         );
       } else if (releaseNotes != null) {
-        final lines =
-            releaseNotes.split('\n').where((s) => s.trim().isNotEmpty).toList();
+        final sections = ReleaseNoteParser.parse(releaseNotes);
 
         notes = Padding(
           padding: const EdgeInsets.only(top: 24.0),
           child: Container(
+            width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
@@ -418,7 +418,7 @@ class UpgradeAlertState extends State<UpgradeAlert> {
               borderRadius: BorderRadius.circular(16),
               child: Stack(
                 children: [
-                  // Decorative Blurred Circle (Matching Figma)
+                  // Decorative Blurred Circle
                   Positioned(
                     top: -30,
                     right: -30,
@@ -429,8 +429,8 @@ class UpgradeAlertState extends State<UpgradeAlert> {
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
                           colors: [
-                            const Color(0xFFFF6B35).withOpacity(0.15),
-                            const Color(0xFFFF6B35).withOpacity(0.0),
+                            primaryOrange.withOpacity(0.15),
+                            primaryOrange.withOpacity(0.0),
                           ],
                         ),
                       ),
@@ -453,16 +453,60 @@ class UpgradeAlertState extends State<UpgradeAlert> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        ...lines.map((line) {
+                        ...sections.map((section) {
+                          final tagInfo =
+                              _getTagInfo(section.tagType, messages);
                           return Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
-                            child: Text(
-                              line.replaceFirst(RegExp(r'^[-•*]\s*'), ''),
-                              style: contentStyle.copyWith(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: textDark,
-                              ),
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (section.tagType != ReleaseNoteTagType.none)
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.only(bottom: 8.0),
+                                    child: Row(
+                                      children: [
+                                        Icon(tagInfo.icon,
+                                            size: 16, color: tagInfo.color),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          '[${tagInfo.label}]',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: tagInfo.color,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ...section.lines.map((line) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                        bottom: 4.0, left: 4),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text('• ',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        Expanded(
+                                          child: Text(
+                                            line,
+                                            style: contentStyle.copyWith(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              color: textDark,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                              ],
                             ),
                           );
                         }),
@@ -598,7 +642,7 @@ class UpgradeAlertState extends State<UpgradeAlert> {
                       ),
                       child: Text(
                         messages.message(UpgraderMessage.buttonTitleUpdate) ??
-                            'Cập nhật ngay',
+                            'UPDATE NOW',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: Colors.white,
@@ -617,7 +661,7 @@ class UpgradeAlertState extends State<UpgradeAlert> {
                         onPressed: () => onUserLater(context, true),
                         child: Text(
                           messages.message(UpgraderMessage.buttonTitleLater) ??
-                              'Để sau',
+                              'LATER',
                           style: const TextStyle(
                               color: textSecondary,
                               fontWeight: FontWeight.w500),
@@ -633,7 +677,7 @@ class UpgradeAlertState extends State<UpgradeAlert> {
                         onPressed: () => onUserIgnored(context, true),
                         child: Text(
                           messages.message(UpgraderMessage.buttonTitleIgnore) ??
-                              'Bỏ qua',
+                              'IGNORE',
                           style: const TextStyle(
                               color: Colors.black38, fontSize: 12),
                         ),
@@ -686,5 +730,122 @@ class UpgradeAlertState extends State<UpgradeAlert> {
             isDefaultAction: isDefaultAction,
             child: Text(text ?? ''))
         : TextButton(onPressed: onPressed, child: Text(text ?? ''));
+  }
+
+  _TagInfo _getTagInfo(ReleaseNoteTagType type, UpgraderMessages messages) {
+    switch (type) {
+      case ReleaseNoteTagType.newFeature:
+        return _TagInfo(
+          label: messages.message(UpgraderMessage.tagNew) ?? 'Mới',
+          icon: Icons.rocket_launch,
+          color: const Color(0xFFFF6B35),
+        );
+      case ReleaseNoteTagType.optimize:
+        return _TagInfo(
+          label: messages.message(UpgraderMessage.tagOptimize) ?? 'Tối ưu',
+          icon: Icons.bolt,
+          color: const Color(0xFF04A3E7),
+        );
+      case ReleaseNoteTagType.fix:
+        return _TagInfo(
+          label: messages.message(UpgraderMessage.tagFix) ?? 'Sửa lỗi',
+          icon: Icons.build,
+          color: Colors.grey,
+        );
+      case ReleaseNoteTagType.security:
+        return _TagInfo(
+          label: messages.message(UpgraderMessage.tagSecurity) ?? 'Bảo mật',
+          icon: Icons.lock,
+          color: Colors.green,
+        );
+      case ReleaseNoteTagType.none:
+        return _TagInfo(label: '', icon: Icons.info, color: Colors.black);
+    }
+  }
+}
+
+class _TagInfo {
+  final String label;
+  final IconData icon;
+  final Color color;
+
+  _TagInfo({required this.label, required this.icon, required this.color});
+}
+
+enum ReleaseNoteTagType { newFeature, optimize, fix, security, none }
+
+class ReleaseNoteSection {
+  final ReleaseNoteTagType tagType;
+  final List<String> lines;
+
+  ReleaseNoteSection({required this.tagType, required this.lines});
+}
+
+class ReleaseNoteParser {
+  static List<ReleaseNoteSection> parse(String text) {
+    final sections = <ReleaseNoteSection>[];
+    final lines = text.split('\n');
+
+    ReleaseNoteTagType currentTag = ReleaseNoteTagType.none;
+    List<String> currentLines = [];
+
+    for (var line in lines) {
+      final trimmedLine = line.trim();
+      if (trimmedLine.isEmpty) continue;
+
+      final tagMatch = RegExp(r'^\[(.+?)\]').firstMatch(trimmedLine);
+      if (tagMatch != null) {
+        if (currentLines.isNotEmpty || currentTag != ReleaseNoteTagType.none) {
+          sections.add(
+              ReleaseNoteSection(tagType: currentTag, lines: currentLines));
+        }
+
+        final tagText = tagMatch.group(1)!.toLowerCase();
+        currentTag = _parseTagType(tagText);
+        currentLines = [];
+
+        // Nếu dòng có nội dung sau tag, thêm vào lines
+        final content = trimmedLine
+            .replaceFirst(RegExp(r'^\[.+?\]'), '')
+            .replaceFirst(RegExp(r'^[-•*]\s*'), '')
+            .trim();
+        if (content.isNotEmpty) {
+          currentLines.add(content);
+        }
+      } else {
+        currentLines.add(trimmedLine.replaceFirst(RegExp(r'^[-•*]\s*'), '').trim());
+      }
+    }
+
+    if (currentLines.isNotEmpty || currentTag != ReleaseNoteTagType.none) {
+      sections.add(ReleaseNoteSection(tagType: currentTag, lines: currentLines));
+    }
+
+    return sections;
+  }
+
+  static ReleaseNoteTagType _parseTagType(String tag) {
+    if (tag.contains('mới') ||
+        tag.contains('bổ sung') ||
+        tag.contains('new') ||
+        tag.contains('added')) {
+      return ReleaseNoteTagType.newFeature;
+    }
+    if (tag.contains('tối ưu') ||
+        tag.contains('cải thiện') ||
+        tag.contains('optimize') ||
+        tag.contains('improve')) {
+      return ReleaseNoteTagType.optimize;
+    }
+    if (tag.contains('sửa lỗi') ||
+        tag.contains('khắc phục') ||
+        tag.contains('fix') ||
+        tag.contains('bug')) {
+      return ReleaseNoteTagType.fix;
+    }
+    if (tag.contains('bảo mật') || tag.contains('security')) {
+      return ReleaseNoteTagType.security;
+    }
+    return ReleaseNoteTagType.none;
   }
 }

@@ -28,6 +28,23 @@ class MyApp extends StatelessWidget {
       title: 'Upgrader Example',
       home: UpgradeAlert(
         isFullScreen: false,
+        upgrader: Upgrader(
+          messages: UpgraderMessages(code: 'vi'),
+//           releaseNotes: '''
+// 🚀 [Bổ sung]
+// - Chức năng tạo đơn đặt phòng xe.
+// - Thời gian vào ra giữa ca tại lịch sử chấm công.
+
+// ⚡️ [Optimize]
+// - Luồng hiển thị thông tin mượt mà hơn.
+
+// 🛠 [Sửa lỗi]
+// - Lỗi văng ứng dụng khi cập nhật ảnh đại diện.
+
+// 🔒 [Security]
+// - Cập nhật bảo mật hệ thống.
+// ''',
+        ),
         child: Scaffold(
           appBar: AppBar(title: const Text('Upgrader Example')),
           body: const Center(child: Text('Checking...')),
