@@ -483,15 +483,27 @@ class UpgradeAlertState extends State<UpgradeAlert> {
                                   ),
                                 ...section.lines.map((line) {
                                   return Padding(
-                                    padding: const EdgeInsets.only(
-                                        bottom: 4.0, left: 4),
+                                    padding:
+                                        const EdgeInsets.only(bottom: 6.0),
                                     child: Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        const Text('• ',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold)),
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                            top: 8.0,
+                                            right: 8.0,
+                                          ),
+                                          width: 5.0,
+                                          height: 5.0,
+                                          decoration: BoxDecoration(
+                                            color: section.tagType !=
+                                                    ReleaseNoteTagType.none
+                                                ? tagInfo.color
+                                                : textDark,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
                                         Expanded(
                                           child: Text(
                                             line,
